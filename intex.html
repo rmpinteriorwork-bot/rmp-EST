@@ -1,0 +1,407 @@
+<!DOCTYPE html>
+<html lang="ta">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RMP Smart Estimator</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+    <style>
+        body { background-color: #121212; color: #e5e7eb; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+        .glass-panel { background: #1e1e1e; border: 1px solid #333; border-radius: 12px; }
+        .btn-primary { background: #f59e0b; color: #000; font-weight: bold; transition: all 0.2s; }
+        .btn-primary:hover { background: #d97706; }
+        @media print {
+            body { background: white; color: black; }
+            .no-print { display: none !important; }
+            .print-only { display: block !important; }
+            .glass-panel { border: none; background: white; }
+        }
+        .print-only { display: none; }
+    </style>
+</head>
+<body class="p-4 md:p-8">
+
+    <div class="max-w-6xl mx-auto flex justify-between items-center mb-6 no-print">
+        <div>
+            <h1 class="text-3xl font-bold text-yellow-500">RMP Smart Estimator</h1>
+            <p class="text-sm text-gray-400">INTERIORS · MODULAR KITCHENS</p>
+        </div>
+        <button onclick="handleAdminLogin()" class="glass-panel px-4 py-2 hover:bg-gray-800 flex items-center gap-2">
+            ⚙️ Admin
+        </button>
+    </div>
+
+    <div class="max-w-6xl mx-auto glass-panel p-6 mb-6 no-print">
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <div>
+                <label class="block text-xs text-gray-400 mb-1">CUSTOMER NAME</label>
+                <input type="text" id="custName" placeholder="e.g. Mr. Sharma" class="w-full bg-gray-800 border border-gray-600 rounded p-2 text-white">
+            </div>
+            <div>
+                <label class="block text-xs text-gray-400 mb-1">MOBILE NUMBER</label>
+                <input type="text" id="custMobile" placeholder="e.g. 98765 43210" class="w-full bg-gray-800 border border-gray-600 rounded p-2 text-white">
+            </div>
+            <div>
+                <label class="block text-xs text-gray-400 mb-1">LOCATION</label>
+                <input type="text" id="custLocation" placeholder="e.g. Tirunelveli" class="w-full bg-gray-800 border border-gray-600 rounded p-2 text-white">
+            </div>
+        </div>
+    </div>
+
+    <div class="max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-6 no-print">
+        
+        <div class="md:col-span-2 space-y-6">
+            <div class="glass-panel p-6">
+                <h2 class="text-xl font-bold mb-4 text-yellow-500">ADD TO ESTIMATE</h2>
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    <div class="col-span-2">
+                        <label class="block text-xs text-gray-400 mb-1">SELECT ITEM</label>
+                        <select id="itemSelect" onchange="updateHelperText()" class="w-full bg-gray-800 border border-gray-600 rounded p-2 text-white">
+                            <option value="">-- Select --</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-xs text-gray-400 mb-1">QUANTITY (<span id="qtyLabel">QTY</span>)</label>
+                        <input type="number" id="itemQty" oninput="updateHelperText()" class="w-full bg-gray-800 border border-gray-600 rounded p-2 text-white" placeholder="0">
+                    </div>
+                </div>
+                <div id="helperText" class="mt-2 text-sm text-yellow-400 h-5"></div>
+                <button onclick="addToEstimate()" class="mt-4 w-full btn-primary py-2 rounded">
+                    + Add to Estimate
+                </button>
+            </div>
+
+            <div class="glass-panel p-4 flex justify-between items-center text-sm">
+                <span class="text-gray-400">Inventory Backup</span>
+                <div class="space-x-2">
+                    <button onclick="exportData()" class="bg-gray-700 px-3 py-1 rounded hover:bg-gray-600">Export JSON</button>
+                    <button onclick="document.getElementById('importFile').click()" class="bg-gray-700 px-3 py-1 rounded hover:bg-gray-600">Import JSON</button>
+                    <input type="file" id="importFile" class="hidden" accept=".json" onchange="importData(event)">
+                </div>
+            </div>
+        </div>
+
+        <div class="glass-panel p-6 flex flex-col">
+            <h2 class="text-xl font-bold mb-4 text-yellow-500">ESTIMATE BREAKUP</h2>
+            <div id="estimateList" class="flex-1 space-y-3 mb-4 overflow-y-auto max-h-96"></div>
+            <div class="border-t border-gray-700 pt-4">
+                <div class="flex justify-between text-2xl font-bold text-yellow-500">
+                    <span>GRAND TOTAL</span>
+                    <span id="grandTotal">₹0</span>
+                </div>
+                <button onclick="generatePDF()" class="mt-4 w-full bg-green-600 hover:bg-green-500 text-white font-bold py-3 rounded">
+                    Download PDF Estimate
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <div id="pdfContent" class="print-only max-w-4xl mx-auto p-10">
+        <div style="border-bottom: 2px solid #f59e0b; padding-bottom: 20px; margin-bottom: 20px; display: flex; justify-content: space-between;">
+            <div>
+                <h1 style="font-size: 28px; font-weight: bold; color: #000; margin: 0;">RMP INTERIOR</h1>
+                <p style="font-size: 14px; color: #555; margin: 5px 0;">INTERIORS · MODULAR KITCHENS</p>
+                <p style="font-size: 12px; color: #555; margin: 0;">Tirunelveli Region, Tamil Nadu 627001</p>
+            </div>
+            <div style="text-align: right;">
+                <p style="font-size: 14px; color: #000; margin: 0;">Date: <span id="pdfDate"></span></p>
+            </div>
+        </div>
+        
+        <div style="margin-bottom: 20px; border-bottom: 1px solid #eee; padding-bottom: 15px;">
+            <h3 style="font-size: 14px; font-weight: bold; margin-bottom: 10px; color: #555;">CUSTOMER DETAILS</h3>
+            <table style="width: 100%; font-size: 14px;">
+                <tr><td style="width: 100px; color: #777;">Name:</td><td id="pdfCustName" style="font-weight: bold;">-</td></tr>
+                <tr><td style="color: #777;">Mobile:</td><td id="pdfCustMobile">-</td></tr>
+                <tr><td style="color: #777;">Location:</td><td id="pdfCustLocation">-</td></tr>
+            </table>
+        </div>
+        
+        <h3 style="font-size: 14px; font-weight: bold; margin-bottom: 10px; color: #555;">ESTIMATE BREAKUP</h3>
+        <table style="width: 100%; border-collapse: collapse; margin-top: 10px;">
+            <thead>
+                <tr style="background-color: #000; color: #f59e0b; font-size: 14px;">
+                    <th style="padding: 10px; text-align: left; border: 1px solid #ccc;">Type</th>
+                    <th style="padding: 10px; text-align: left; border: 1px solid #ccc;">Description</th>
+                    <th style="padding: 10px; text-align: center; border: 1px solid #ccc;">Qty</th>
+                    <th style="padding: 10px; text-align: right; border: 1px solid #ccc;">Rate</th>
+                    <th style="padding: 10px; text-align: right; border: 1px solid #ccc;">Amount</th>
+                </tr>
+            </thead>
+            <tbody id="pdfTableBody" style="font-size: 14px;"></tbody>
+        </table>
+        
+        <div style="margin-top: 20px; text-align: right; font-size: 20px; font-weight: bold;">
+            <span style="background: #000; color: #f59e0b; padding: 10px 20px;">GRAND TOTAL: <span id="pdfGrandTotal">₹0</span></span>
+        </div>
+    </div>
+
+    <div id="adminModal" class="fixed inset-0 bg-black bg-opacity-80 hidden flex justify-center items-center z-50 p-4">
+        <div class="glass-panel w-full max-w-4xl p-6 bg-gray-900 max-h-[90vh] overflow-y-auto">
+            <div class="flex justify-between items-center mb-6 border-b border-gray-700 pb-2">
+                <h2 class="text-2xl font-bold text-yellow-500">Admin Panel - Inventory</h2>
+                <button onclick="closeAdmin()" class="text-red-500 font-bold text-xl">X</button>
+            </div>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+                <div>
+                    <label class="block text-xs text-gray-400">Type</label>
+                    <select id="invType" onchange="toggleCustomFields()" class="w-full bg-gray-800 border p-2 rounded text-white">
+                        <option value="Product">Product</option>
+                        <option value="Service">Service</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="block text-xs text-gray-400">Item Name *</label>
+                    <input type="text" id="invName" class="w-full bg-gray-800 border p-2 rounded text-white">
+                </div>
+                <div>
+                    <label class="block text-xs text-gray-400">Category</label>
+                    <input type="text" id="invCategory" placeholder="e.g. Plywood, Laminate" class="w-full bg-gray-800 border p-2 rounded text-white">
+                </div>
+                <div>
+                    <label class="block text-xs text-gray-400">Unit *</label>
+                    <select id="invUnit" class="w-full bg-gray-800 border p-2 rounded text-white">
+                        <option value="Sheet (32 Sq.ft)">Sheet (32 Sq.ft)</option>
+                        <option value="Sq.ft (Direct)">Sq.ft (Direct)</option>
+                        <option value="Box">Box</option>
+                        <option value="Numbers">Numbers</option>
+                        <option value="Rft">Rft</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="block text-xs text-gray-400">Selling Price (₹) *</label>
+                    <input type="number" id="invSell" class="w-full bg-gray-800 border p-2 rounded text-white">
+                </div>
+                <div>
+                    <label class="block text-xs text-green-400">Purchase Price (₹) [Internal Only]</label>
+                    <input type="number" id="invBuy" class="w-full bg-gray-800 border border-green-800 p-2 rounded text-white">
+                </div>
+                
+                <div class="custom-field"><label class="block text-xs text-gray-400">Brand</label><input type="text" id="invBrand" class="w-full bg-gray-800 border p-2 rounded text-white"></div>
+                <div class="custom-field"><label class="block text-xs text-gray-400">Grade</label><input type="text" id="invGrade" class="w-full bg-gray-800 border p-2 rounded text-white"></div>
+                <div class="custom-field"><label class="block text-xs text-gray-400">Color</label><input type="text" id="invColor" class="w-full bg-gray-800 border p-2 rounded text-white"></div>
+                <div class="custom-field"><label class="block text-xs text-gray-400">Model</label><input type="text" id="invModel" class="w-full bg-gray-800 border p-2 rounded text-white"></div>
+            </div>
+            
+            <button onclick="saveItem()" class="btn-primary px-6 py-2 rounded mb-6">Save Item</button>
+
+            <table class="w-full text-left text-sm border-collapse">
+                <thead>
+                    <tr class="border-b border-gray-600 text-yellow-500">
+                        <th class="py-2">Name</th>
+                        <th>Unit</th>
+                        <th>Buy (₹)</th>
+                        <th>Sell (₹)</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody id="inventoryTableBody"></tbody>
+            </table>
+        </div>
+    </div>
+
+    <script>
+        let inventory = JSON.parse(localStorage.getItem('rmp_inventory')) || [];
+        let estimateList = [];
+
+        function handleAdminLogin() {
+            let pwd = prompt("Enter Admin Password:");
+            if(pwd === "rmp123") {
+                document.getElementById('adminModal').classList.remove('hidden');
+                renderAdminTable();
+            } else if(pwd !== null) {
+                alert("Incorrect Password!");
+            }
+        }
+
+        function closeAdmin() {
+            document.getElementById('adminModal').classList.add('hidden');
+            loadDropdown();
+        }
+
+        function toggleCustomFields() {
+            const isService = document.getElementById('invType').value === 'Service';
+            document.querySelectorAll('.custom-field').forEach(el => {
+                el.style.display = isService ? 'none' : 'block';
+            });
+        }
+
+        function saveItem() {
+            const item = {
+                id: Date.now().toString(),
+                type: document.getElementById('invType').value,
+                name: document.getElementById('invName').value,
+                category: document.getElementById('invCategory').value,
+                unit: document.getElementById('invUnit').value,
+                sellPrice: Number(document.getElementById('invSell').value),
+                buyPrice: Number(document.getElementById('invBuy').value),
+                brand: document.getElementById('invBrand').value,
+                grade: document.getElementById('invGrade').value,
+                color: document.getElementById('invColor').value,
+                model: document.getElementById('invModel').value
+            };
+            if(!item.name || !item.sellPrice) return alert("Name and Selling Price are required!");
+            inventory.push(item);
+            localStorage.setItem('rmp_inventory', JSON.stringify(inventory));
+            ['invName', 'invCategory', 'invSell', 'invBuy', 'invBrand', 'invGrade', 'invColor', 'invModel'].forEach(id => document.getElementById(id).value = '');
+            renderAdminTable();
+        }
+
+        function deleteItem(id) {
+            inventory = inventory.filter(i => i.id !== id);
+            localStorage.setItem('rmp_inventory', JSON.stringify(inventory));
+            renderAdminTable();
+        }
+
+        function renderAdminTable() {
+            const tbody = document.getElementById('inventoryTableBody');
+            tbody.innerHTML = '';
+            inventory.forEach(item => {
+                tbody.innerHTML += `
+                    <tr class="border-b border-gray-700">
+                        <td class="py-2">${item.name} <span class="text-xs text-gray-500">(${item.category})</span></td>
+                        <td>${item.unit}</td>
+                        <td class="text-green-400">₹${item.buyPrice}</td>
+                        <td>₹${item.sellPrice}</td>
+                        <td><button onclick="deleteItem('${item.id}')" class="text-red-500">Delete</button></td>
+                    </tr>`;
+            });
+        }
+
+        function loadDropdown() {
+            const select = document.getElementById('itemSelect');
+            select.innerHTML = '<option value="">-- Select Material / Service --</option>';
+            inventory.forEach(item => {
+                let details = [item.name, item.brand, item.grade].filter(Boolean).join(' · ');
+                select.innerHTML += `<option value="${item.id}">${details} — ₹${item.sellPrice}/${item.unit}</option>`;
+            });
+        }
+
+        function updateHelperText() {
+            const itemId = document.getElementById('itemSelect').value;
+            const qty = Number(document.getElementById('itemQty').value) || 0;
+            const helper = document.getElementById('helperText');
+            const label = document.getElementById('qtyLabel');
+            if(!itemId) { helper.innerText = ''; label.innerText = 'QTY'; return; }
+            const item = inventory.find(i => i.id === itemId);
+            
+            if(item.unit === 'Sheet (32 Sq.ft)') {
+                label.innerText = 'SHEETS';
+                helper.innerText = qty > 0 ? `1 Sheet = ₹${item.sellPrice * 32} | Total: ${qty * 32} Sq.ft` : `1 Sheet = ₹${item.sellPrice * 32}`;
+            } else {
+                label.innerText = item.unit.toUpperCase();
+                helper.innerText = '';
+            }
+        }
+
+        function addToEstimate() {
+            const itemId = document.getElementById('itemSelect').value;
+            const qty = Number(document.getElementById('itemQty').value);
+            if(!itemId || qty <= 0) return alert("Select an item and valid quantity");
+            const item = inventory.find(i => i.id === itemId);
+            
+            let amount = 0, displayQty = '';
+            if(item.unit === 'Sheet (32 Sq.ft)') {
+                amount = qty * 32 * item.sellPrice;
+                displayQty = `${qty} Sheets (${qty * 32} Sq.ft)`;
+            } else {
+                amount = qty * item.sellPrice;
+                displayQty = `${qty} ${item.unit}`;
+            }
+
+            const descParts = [item.name, item.brand, item.grade, item.color, item.model].filter(Boolean).join(' · ');
+            estimateList.push({ id: Date.now(), category: item.category, desc: descParts, qty: displayQty, rate: `₹${item.sellPrice}/${item.unit}`, amount: amount });
+            
+            document.getElementById('itemSelect').value = '';
+            document.getElementById('itemQty').value = '';
+            updateHelperText();
+            renderEstimate();
+        }
+
+        function removeEstimateRow(id) {
+            estimateList = estimateList.filter(row => row.id !== id);
+            renderEstimate();
+        }
+
+        function renderEstimate() {
+            const list = document.getElementById('estimateList');
+            const pdfBody = document.getElementById('pdfTableBody');
+            list.innerHTML = ''; pdfBody.innerHTML = '';
+            let total = 0;
+
+            estimateList.forEach(row => {
+                total += row.amount;
+                list.innerHTML += `
+                    <div class="bg-gray-800 p-3 rounded flex justify-between items-center text-sm">
+                        <div><p class="font-bold text-white">${row.desc}</p><p class="text-gray-400">${row.qty} · ${row.rate}</p></div>
+                        <div class="flex items-center gap-4"><span class="font-bold text-yellow-400">₹${row.amount}</span>
+                        <button onclick="removeEstimateRow(${row.id})" class="text-red-500">✖</button></div>
+                    </div>`;
+                pdfBody.innerHTML += `
+                    <tr>
+                        <td style="padding: 10px; border: 1px solid #ccc;">${row.category || '-'}</td>
+                        <td style="padding: 10px; border: 1px solid #ccc;">${row.desc}</td>
+                        <td style="padding: 10px; text-align: center; border: 1px solid #ccc;">${row.qty}</td>
+                        <td style="padding: 10px; text-align: right; border: 1px solid #ccc;">${row.rate}</td>
+                        <td style="padding: 10px; text-align: right; border: 1px solid #ccc;">₹${row.amount}</td>
+                    </tr>`;
+            });
+            document.getElementById('grandTotal').innerText = `₹${total}`;
+            document.getElementById('pdfGrandTotal').innerText = `₹${total}`;
+        }
+
+        function generatePDF() {
+            if(estimateList.length === 0) return alert("Add items to generate estimate");
+            
+            // Populate Customer Details into PDF
+            document.getElementById('pdfCustName').innerText = document.getElementById('custName').value || '-';
+            document.getElementById('pdfCustMobile').innerText = document.getElementById('custMobile').value || '-';
+            document.getElementById('pdfCustLocation').innerText = document.getElementById('custLocation').value || '-';
+            
+            // Set Date
+            const today = new Date();
+            document.getElementById('pdfDate').innerText = today.toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric' });
+
+            const element = document.getElementById('pdfContent');
+            element.classList.remove('print-only'); 
+            
+            html2pdf().set({
+                margin: 10,
+                filename: 'RMP-Estimate-' + document.getElementById('custName').value + '.pdf',
+                image: { type: 'jpeg', quality: 0.98 },
+                html2canvas: { scale: 2 },
+                jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
+            }).from(element).save().then(() => {
+                element.classList.add('print-only'); 
+            });
+        }
+
+        function exportData() {
+            const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(inventory));
+            const dlAnchorElem = document.createElement('a');
+            dlAnchorElem.setAttribute("href", dataStr);
+            dlAnchorElem.setAttribute("download", "rmp_inventory_backup.json");
+            dlAnchorElem.click();
+        }
+
+        function importData(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                try {
+                    inventory = JSON.parse(e.target.result);
+                    localStorage.setItem('rmp_inventory', JSON.stringify(inventory));
+                    loadDropdown();
+                    alert("Backup Imported Successfully!");
+                } catch(err) { alert("Error loading backup file"); }
+            };
+            reader.readAsText(file);
+        }
+
+        window.onload = loadDropdown;
+    </script>
+</body>
+</html>
