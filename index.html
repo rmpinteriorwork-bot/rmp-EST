@@ -32,7 +32,6 @@
         </button>
     </div>
 
-    <!-- CUSTOMER DETAILS SECTION -->
     <div class="max-w-6xl mx-auto glass-panel p-6 mb-6 no-print">
         <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
             <div>
@@ -50,7 +49,6 @@
         </div>
     </div>
 
-    <!-- MAIN ESTIMATOR UI -->
     <div class="max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-6 no-print">
         <div class="md:col-span-2 space-y-6">
             <div class="glass-panel p-6">
@@ -73,7 +71,6 @@
                 </button>
             </div>
 
-            <!-- BACKUP -->
             <div class="glass-panel p-4 flex justify-between items-center text-sm">
                 <span class="text-gray-400">Inventory Backup</span>
                 <div class="space-x-2">
@@ -84,7 +81,6 @@
             </div>
         </div>
 
-        <!-- BREAKUP -->
         <div class="glass-panel p-6 flex flex-col">
             <h2 class="text-xl font-bold mb-4 text-yellow-500">ESTIMATE BREAKUP</h2>
             <div id="estimateList" class="flex-1 space-y-3 mb-4 overflow-y-auto max-h-96"></div>
@@ -100,14 +96,11 @@
         </div>
     </div>
 
-    <!-- HIDDEN PDF TEMPLATE (PURE BLACK TEXT) -->
     <div id="pdfContent" class="print-only max-w-4xl mx-auto p-10" style="background: white; color: black; font-family: sans-serif;">
         
-        <!-- HEADER -->
-        <div style="border-bottom: 3px solid #f59e0b; padding-bottom: 15px; margin-bottom: 15px; display: flex; justify-content: space-between; align-items: flex-start;">
+        <div style="border-bottom: 3px solid #f59e0b; padding-bottom: 15px; margin-bottom: 15px; display: flex; justify-content: space-between; align-items: flex-end;">
             <div style="display: flex; gap: 15px; align-items: center;">
-                <!-- Logo Image (Will load automatically if logo.png is uploaded to GitHub) -->
-                <img src="RMP-LOGO.jpg" alt="Logo" style="height: 65px; object-fit: contain;" onerror="this.style.display='none'">
+                <img src="https://rmpinteriorwork-bot.github.io/rmp-EST/RMP-LOGO.jpg" alt="Logo" style="height: 65px; object-fit: contain;" onerror="this.style.display='none'">
                 <div>
                     <h1 style="font-size: 32px; font-weight: 900; color: #000; margin: 0; text-transform: uppercase;">RMP INTERIOR</h1>
                     <p style="font-size: 15px; color: #000; margin: 4px 0; font-weight: bold; letter-spacing: 1px;">INTERIORS · MODULAR KITCHENS</p>
@@ -116,11 +109,10 @@
             </div>
             <div style="text-align: right;">
                 <p style="font-size: 14px; color: #000; margin: 0; font-weight: bold;">Date: <span id="pdfDate"></span></p>
-                <p style="font-size: 14px; color: #000; margin: 5px 0; font-weight: bold;">Estimate: <span id="pdfEstNum"></span></p>
+                <p style="font-size: 14px; color: #000; margin: 5px 0 0 0; font-weight: bold;">Estimate: <span id="pdfEstNum"></span></p>
             </div>
         </div>
         
-        <!-- CUSTOMER DETAILS -->
         <div style="margin-bottom: 20px; border-bottom: 1px solid #000; padding-bottom: 15px;">
             <h3 style="font-size: 16px; font-weight: 900; margin-bottom: 10px; color: #000; text-transform: uppercase;">Customer Details</h3>
             <table style="width: 100%; font-size: 15px; color: #000;">
@@ -130,31 +122,28 @@
             </table>
         </div>
         
-        <!-- TABLE -->
         <h3 style="font-size: 16px; font-weight: 900; margin-bottom: 8px; color: #000; text-transform: uppercase;">Estimate Breakup</h3>
         <table style="width: 100%; border-collapse: collapse; margin-top: 5px; border: 1px solid #000;">
             <thead>
                 <tr style="background-color: #f3f4f6; color: #000; font-size: 14px; border-bottom: 2px solid #000;">
-                    <th style="padding: 10px; text-align: left; border: 1px solid #000; font-weight: 900;">Type</th>
-                    <th style="padding: 10px; text-align: left; border: 1px solid #000; font-weight: 900;">Description</th>
+                    <th style="padding: 10px; text-align: center; border: 1px solid #000; font-weight: 900;">Type</th>
+                    <th style="padding: 10px; text-align: center; border: 1px solid #000; font-weight: 900;">Description</th>
                     <th style="padding: 10px; text-align: center; border: 1px solid #000; font-weight: 900;">Qty</th>
-                    <th style="padding: 10px; text-align: right; border: 1px solid #000; font-weight: 900;">Rate</th>
-                    <th style="padding: 10px; text-align: right; border: 1px solid #000; font-weight: 900;">Amount</th>
+                    <th style="padding: 10px; text-align: center; border: 1px solid #000; font-weight: 900;">Rate</th>
+                    <th style="padding: 10px; text-align: center; border: 1px solid #000; font-weight: 900;">Amount</th>
                 </tr>
             </thead>
             <tbody id="pdfTableBody" style="font-size: 14px; color: #000;"></tbody>
         </table>
         
-        <!-- GRAND TOTAL -->
         <div style="margin-top: 20px; text-align: right; font-size: 22px; font-weight: 900; color: #000;">
             <span style="border-top: 2px solid #000; border-bottom: 2px solid #000; padding: 10px 0; display: inline-block;">
                 GRAND TOTAL: <span id="pdfGrandTotal">₹0</span>
             </span>
         </div>
 
-        <!-- FOOTER (ADDRESS & CONTACT) -->
         <div style="margin-top: 50px; border-top: 3px solid #f59e0b; padding-top: 15px; font-size: 13px; color: #000; display: flex; justify-content: space-between; font-weight: bold; align-items: center;">
-            <div style="flex: 1;">📍 #4 MA SALAM PLAZA, KTC NAGAR, PALAYAMKOTTAI, TIRUNELVELI 637011</div>
+            <div style="flex: 1;">📍 #4 MA SALAM PLAZA, KTC NAGAR, PALAYAMKOTTAI, TIRUNELVELI 627011</div>
             <div style="text-align: right;">
                 📞 9080405311 <br>
                 ✉️ rmpinteriorwork@gmail.com
@@ -162,7 +151,6 @@
         </div>
     </div>
 
-    <!-- ADMIN MODAL -->
     <div id="adminModal" class="fixed inset-0 bg-black bg-opacity-80 hidden flex justify-center items-center z-50 p-4">
         <div class="glass-panel w-full max-w-4xl p-6 bg-gray-900 max-h-[90vh] overflow-y-auto">
             <div class="flex justify-between items-center mb-6 border-b border-gray-700 pb-2">
@@ -360,11 +348,9 @@
             estimateList.forEach(row => {
                 total += row.amount;
                 
-                // Removing "(Direct)" strictly for PDF view
                 const pdfQty = row.qty.replace(/\(Direct\)/gi, '').trim();
                 const pdfRate = row.rate.replace(/\(Direct\)/gi, '').trim();
 
-                // UI Screen View
                 list.innerHTML += `
                     <div class="bg-gray-800 p-3 rounded flex justify-between items-center text-sm">
                         <div><p class="font-bold text-white">${row.desc}</p><p class="text-gray-400">${row.qty} · ${row.rate}</p></div>
@@ -372,14 +358,14 @@
                         <button onclick="removeEstimateRow(${row.id})" class="text-red-500 font-bold text-lg">✖</button></div>
                     </div>`;
                     
-                // PDF Print View (Pure Black Text & Borders)
+                // Center aligned PDF Table Body
                 pdfBody.innerHTML += `
                     <tr>
-                        <td style="padding: 10px; border: 1px solid #000; font-weight: bold;">${row.category || '-'}</td>
-                        <td style="padding: 10px; border: 1px solid #000; font-weight: 900;">${row.desc}</td>
+                        <td style="padding: 10px; text-align: center; border: 1px solid #000; font-weight: bold;">${row.category || '-'}</td>
+                        <td style="padding: 10px; text-align: center; border: 1px solid #000; font-weight: 900;">${row.desc}</td>
                         <td style="padding: 10px; text-align: center; border: 1px solid #000; font-weight: bold;">${pdfQty}</td>
-                        <td style="padding: 10px; text-align: right; border: 1px solid #000; font-weight: bold;">${pdfRate}</td>
-                        <td style="padding: 10px; text-align: right; border: 1px solid #000; font-weight: 900;">₹${row.amount}</td>
+                        <td style="padding: 10px; text-align: center; border: 1px solid #000; font-weight: bold;">${pdfRate}</td>
+                        <td style="padding: 10px; text-align: center; border: 1px solid #000; font-weight: 900;">₹${row.amount}</td>
                     </tr>`;
             });
             document.getElementById('grandTotal').innerText = `₹${total}`;
@@ -389,12 +375,10 @@
         function generatePDF() {
             if(estimateList.length === 0) return alert("Add items to generate estimate");
             
-            // Populate Customer Details into PDF
             document.getElementById('pdfCustName').innerText = document.getElementById('custName').value || '-';
             document.getElementById('pdfCustMobile').innerText = document.getElementById('custMobile').value || '-';
             document.getElementById('pdfCustLocation').innerText = document.getElementById('custLocation').value || '-';
             
-            // Set Date & Auto Generate Estimate Number
             const today = new Date();
             document.getElementById('pdfDate').innerText = today.toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric' });
             document.getElementById('pdfEstNum').innerText = "EST-" + Math.floor(100000 + Math.random() * 900000);
@@ -402,7 +386,6 @@
             const element = document.getElementById('pdfContent');
             element.classList.remove('print-only'); 
             
-            // html2pdf config for crispy black text
             html2pdf().set({
                 margin: 10,
                 filename: 'RMP-Estimate-' + (document.getElementById('custName').value || 'New') + '.pdf',
