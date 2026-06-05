@@ -15,7 +15,6 @@
 </head>
 <body class="p-4 md:p-8">
 
-    <!-- MAIN APP HEADER -->
     <div class="max-w-6xl mx-auto flex justify-between items-center mb-6">
         <div class="flex items-center gap-4">
             <img src="https://rmpinteriorwork-bot.github.io/rmp-EST/RMP-LOGO.jpeg" alt="Logo" class="h-16 w-16 object-contain bg-white rounded p-1" onerror="this.style.display='none'">
@@ -29,7 +28,6 @@
         </button>
     </div>
 
-    <!-- CUSTOMER DETAILS SECTION -->
     <div class="max-w-6xl mx-auto glass-panel p-6 mb-6">
         <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
             <div>
@@ -47,7 +45,6 @@
         </div>
     </div>
 
-    <!-- MAIN ESTIMATOR UI -->
     <div class="max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-6">
         <div class="md:col-span-2 space-y-6">
             <div class="glass-panel p-6">
@@ -70,7 +67,6 @@
                 </button>
             </div>
 
-            <!-- BACKUP -->
             <div class="glass-panel p-4 flex justify-between items-center text-sm">
                 <span class="text-gray-400">Inventory Backup</span>
                 <div class="space-x-2">
@@ -81,7 +77,6 @@
             </div>
         </div>
 
-        <!-- BREAKUP -->
         <div class="glass-panel p-6 flex flex-col">
             <h2 class="text-xl font-bold mb-4 text-yellow-500">ESTIMATE BREAKUP</h2>
             <div id="estimateList" class="flex-1 space-y-3 mb-4 overflow-y-auto max-h-96"></div>
@@ -97,8 +92,7 @@
         </div>
     </div>
 
-    <!-- PREVIEW MODAL -->
-    <div id="previewModal" class="fixed inset-0 bg-black bg-opacity-95 hidden z-50 flex-col items-center p-4 overflow-y-auto">
+    <div id="previewModal" class="fixed inset-0 bg-black bg-opacity-95 z-50 flex-col items-center p-4 overflow-y-auto" style="display: none;">
         <div class="w-full max-w-4xl flex justify-between items-center mb-4 sticky top-0 z-50 bg-gray-800 p-4 rounded-lg shadow-xl border border-gray-600">
             <h2 class="text-yellow-500 font-bold text-lg">🔍 Preview Estimate</h2>
             <div class="flex gap-4">
@@ -162,8 +156,7 @@
         </div>
     </div>
 
-    <!-- ADMIN MODAL -->
-    <div id="adminModal" class="fixed inset-0 bg-black bg-opacity-80 hidden justify-center items-center z-50 p-4">
+    <div id="adminModal" class="fixed inset-0 bg-black bg-opacity-80 justify-center items-center z-50 p-4" style="display: none;">
         <div class="glass-panel w-full max-w-4xl p-6 bg-gray-900 max-h-[90vh] overflow-y-auto">
             <div class="flex justify-between items-center mb-6 border-b border-gray-700 pb-2">
                 <h2 class="text-2xl font-bold text-yellow-500">Admin Panel - Inventory</h2>
@@ -242,9 +235,7 @@
         function handleAdminLogin() {
             let pwd = prompt("Enter Admin Password:");
             if(pwd === "rmp123") {
-                let modal = document.getElementById('adminModal');
-                modal.classList.remove('hidden');
-                modal.classList.add('flex');
+                document.getElementById('adminModal').style.display = 'flex';
                 renderAdminTable();
             } else if(pwd !== null) {
                 alert("Incorrect Password!");
@@ -252,9 +243,7 @@
         }
 
         function closeAdmin() {
-            let modal = document.getElementById('adminModal');
-            modal.classList.remove('flex');
-            modal.classList.add('hidden');
+            document.getElementById('adminModal').style.display = 'none';
             loadDropdown();
         }
 
@@ -377,6 +366,9 @@
             estimateList.forEach(row => {
                 total += row.amount;
                 
+                const pdfQty = row.qty.replace(/\(Direct\)/gi, '').trim();
+                const pdfRate = row.rate.replace(/\(Direct\)/gi, '').replace(/\(32 Sq\.ft\)/gi, '').trim();
+
                 list.innerHTML += `
                     <div class="bg-gray-800 p-3 rounded flex justify-between items-center text-sm">
                         <div><p class="font-bold text-white">${row.desc}</p><p class="text-gray-400">${row.qty} · ${row.rate}</p></div>
@@ -388,8 +380,8 @@
                     <tr>
                         <td style="padding: 10px; text-align: center; border: 1px solid #000; font-weight: bold;">${row.category || '-'}</td>
                         <td style="padding: 10px; text-align: center; border: 1px solid #000; font-weight: 900;">${row.desc}</td>
-                        <td style="padding: 10px; text-align: center; border: 1px solid #000; font-weight: bold;">${row.qty}</td>
-                        <td style="padding: 10px; text-align: center; border: 1px solid #000; font-weight: bold;">${row.rate}</td>
+                        <td style="padding: 10px; text-align: center; border: 1px solid #000; font-weight: bold;">${pdfQty}</td>
+                        <td style="padding: 10px; text-align: center; border: 1px solid #000; font-weight: bold;">${pdfRate}</td>
                         <td style="padding: 10px; text-align: center; border: 1px solid #000; font-weight: 900;">₹${row.amount}</td>
                     </tr>`;
             });
@@ -411,15 +403,11 @@
                 document.getElementById('pdfEstNum').innerText = "EST-" + Math.floor(100000 + Math.random() * 900000);
             }
 
-            let modal = document.getElementById('previewModal');
-            modal.classList.remove('hidden');
-            modal.classList.add('flex');
+            document.getElementById('previewModal').style.display = 'flex';
         }
 
         function closePreview() {
-            let modal = document.getElementById('previewModal');
-            modal.classList.remove('flex');
-            modal.classList.add('hidden');
+            document.getElementById('previewModal').style.display = 'none';
         }
 
         function downloadPDF() {
