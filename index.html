@@ -17,7 +17,7 @@
 
     <div class="max-w-6xl mx-auto flex justify-between items-center mb-6">
         <div class="flex items-center gap-4">
-            <img src="RMP-LOGO.jpg" alt="Logo" class="h-16 w-16 object-contain bg-white rounded p-1" onerror="this.style.display='none'">
+            <img src="https://rmpinteriorwork-bot.github.io/rmp-EST/RMP-LOGO.jpg" alt="Logo" class="h-16 w-16 object-contain bg-white rounded p-1" onerror="this.style.display='none'">
             <div>
                 <h1 class="text-3xl font-bold text-yellow-500">RMP Smart Estimator</h1>
                 <p class="text-sm text-gray-400">Built with Vision. Designed with Care.</p>
@@ -104,7 +104,7 @@
         <div id="pdfContent" class="bg-white p-10 w-full max-w-4xl shadow-2xl relative" style="color: black; font-family: sans-serif;">
             <div style="border-bottom: 3px solid #f59e0b; padding-bottom: 15px; margin-bottom: 15px; display: flex; justify-content: space-between; align-items: flex-end;">
                 <div style="display: flex; gap: 15px; align-items: center;">
-                    <img src="RMP-LOGO.jpg" alt="Logo" style="height: 65px; width: 65px; object-fit: contain;">
+                    <img src="https://rmpinteriorwork-bot.github.io/rmp-EST/RMP-LOGO.jpg" alt="Logo" style="height: 65px; width: 65px; object-fit: contain;">
                     <div>
                         <h1 style="font-size: 32px; font-weight: 900; color: #000; margin: 0; text-transform: uppercase;">RMP INTERIOR</h1>
                         <p style="font-size: 14px; color: #000; margin: 4px 0; font-weight: bold; letter-spacing: 1px;">Built with Vision. Designed with Care.</p>
@@ -222,7 +222,6 @@
     </div>
 
     <script>
-        // Safety Check 1: Protected JSON Loading
         let inventory = [];
         try {
             let savedData = localStorage.getItem('rmp_inventory');
@@ -233,7 +232,6 @@
         }
         let estimateList = [];
 
-        // Safety Check 2: Fixed Modal Toggles
         function handleAdminLogin() {
             let pwd = prompt("Enter Admin Password:");
             if(pwd === "rmp123") {
