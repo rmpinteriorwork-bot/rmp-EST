@@ -22,16 +22,22 @@
 </head>
 <body class="p-4 md:p-8">
 
+    <!-- MAIN APP HEADER (With Logo & New Tagline) -->
     <div class="max-w-6xl mx-auto flex justify-between items-center mb-6 no-print">
-        <div>
-            <h1 class="text-3xl font-bold text-yellow-500">RMP Smart Estimator</h1>
-            <p class="text-sm text-gray-400">INTERIORS · MODULAR KITCHENS</p>
+        <div class="flex items-center gap-4">
+            <!-- App UI Logo -->
+            <img src="RMP-LOGO.jpg" alt="Logo" class="h-16 w-16 object-contain bg-white rounded p-1" onerror="this.style.display='none'">
+            <div>
+                <h1 class="text-3xl font-bold text-yellow-500">RMP Smart Estimator</h1>
+                <p class="text-sm text-gray-400">Built with Vision. Designed with Care.</p>
+            </div>
         </div>
         <button onclick="handleAdminLogin()" class="glass-panel px-4 py-2 hover:bg-gray-800 flex items-center gap-2">
             ⚙️ Admin
         </button>
     </div>
 
+    <!-- CUSTOMER DETAILS SECTION -->
     <div class="max-w-6xl mx-auto glass-panel p-6 mb-6 no-print">
         <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
             <div>
@@ -49,6 +55,7 @@
         </div>
     </div>
 
+    <!-- MAIN ESTIMATOR UI -->
     <div class="max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-6 no-print">
         <div class="md:col-span-2 space-y-6">
             <div class="glass-panel p-6">
@@ -71,6 +78,7 @@
                 </button>
             </div>
 
+            <!-- BACKUP -->
             <div class="glass-panel p-4 flex justify-between items-center text-sm">
                 <span class="text-gray-400">Inventory Backup</span>
                 <div class="space-x-2">
@@ -81,6 +89,7 @@
             </div>
         </div>
 
+        <!-- BREAKUP -->
         <div class="glass-panel p-6 flex flex-col">
             <h2 class="text-xl font-bold mb-4 text-yellow-500">ESTIMATE BREAKUP</h2>
             <div id="estimateList" class="flex-1 space-y-3 mb-4 overflow-y-auto max-h-96"></div>
@@ -96,14 +105,17 @@
         </div>
     </div>
 
+    <!-- HIDDEN PDF TEMPLATE (PURE BLACK TEXT & NEW TAGLINE) -->
     <div id="pdfContent" class="print-only max-w-4xl mx-auto p-10" style="background: white; color: black; font-family: sans-serif;">
         
+        <!-- HEADER -->
         <div style="border-bottom: 3px solid #f59e0b; padding-bottom: 15px; margin-bottom: 15px; display: flex; justify-content: space-between; align-items: flex-end;">
             <div style="display: flex; gap: 15px; align-items: center;">
-                <img src="https://rmpinteriorwork-bot.github.io/rmp-EST/RMP-LOGO.jpg" alt="Logo" style="height: 65px; object-fit: contain;" onerror="this.style.display='none'">
+                <!-- PDF Logo Image -->
+                <img src="https://rmpinteriorwork-bot.github.io/rmp-EST/RMP-LOGO.jpg" alt="Logo" style="height: 65px; width: 65px; object-fit: contain;">
                 <div>
                     <h1 style="font-size: 32px; font-weight: 900; color: #000; margin: 0; text-transform: uppercase;">RMP INTERIOR</h1>
-                    <p style="font-size: 15px; color: #000; margin: 4px 0; font-weight: bold; letter-spacing: 1px;">INTERIORS · MODULAR KITCHENS</p>
+                    <p style="font-size: 14px; color: #000; margin: 4px 0; font-weight: bold; letter-spacing: 1px;">Built with Vision. Designed with Care.</p>
                     <p style="font-size: 13px; color: #000; margin: 0; font-weight: bold;">MSME: TN-18-0050211</p>
                 </div>
             </div>
@@ -113,6 +125,7 @@
             </div>
         </div>
         
+        <!-- CUSTOMER DETAILS -->
         <div style="margin-bottom: 20px; border-bottom: 1px solid #000; padding-bottom: 15px;">
             <h3 style="font-size: 16px; font-weight: 900; margin-bottom: 10px; color: #000; text-transform: uppercase;">Customer Details</h3>
             <table style="width: 100%; font-size: 15px; color: #000;">
@@ -122,6 +135,7 @@
             </table>
         </div>
         
+        <!-- TABLE (Centered Alignment) -->
         <h3 style="font-size: 16px; font-weight: 900; margin-bottom: 8px; color: #000; text-transform: uppercase;">Estimate Breakup</h3>
         <table style="width: 100%; border-collapse: collapse; margin-top: 5px; border: 1px solid #000;">
             <thead>
@@ -136,12 +150,14 @@
             <tbody id="pdfTableBody" style="font-size: 14px; color: #000;"></tbody>
         </table>
         
+        <!-- GRAND TOTAL -->
         <div style="margin-top: 20px; text-align: right; font-size: 22px; font-weight: 900; color: #000;">
             <span style="border-top: 2px solid #000; border-bottom: 2px solid #000; padding: 10px 0; display: inline-block;">
                 GRAND TOTAL: <span id="pdfGrandTotal">₹0</span>
             </span>
         </div>
 
+        <!-- FOOTER -->
         <div style="margin-top: 50px; border-top: 3px solid #f59e0b; padding-top: 15px; font-size: 13px; color: #000; display: flex; justify-content: space-between; font-weight: bold; align-items: center;">
             <div style="flex: 1;">📍 #4 MA SALAM PLAZA, KTC NAGAR, PALAYAMKOTTAI, TIRUNELVELI 627011</div>
             <div style="text-align: right;">
@@ -151,6 +167,7 @@
         </div>
     </div>
 
+    <!-- ADMIN MODAL -->
     <div id="adminModal" class="fixed inset-0 bg-black bg-opacity-80 hidden flex justify-center items-center z-50 p-4">
         <div class="glass-panel w-full max-w-4xl p-6 bg-gray-900 max-h-[90vh] overflow-y-auto">
             <div class="flex justify-between items-center mb-6 border-b border-gray-700 pb-2">
@@ -358,7 +375,6 @@
                         <button onclick="removeEstimateRow(${row.id})" class="text-red-500 font-bold text-lg">✖</button></div>
                     </div>`;
                     
-                // Center aligned PDF Table Body
                 pdfBody.innerHTML += `
                     <tr>
                         <td style="padding: 10px; text-align: center; border: 1px solid #000; font-weight: bold;">${row.category || '-'}</td>
