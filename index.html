@@ -17,7 +17,7 @@
 
     <div class="max-w-6xl mx-auto flex justify-between items-center mb-6">
         <div class="flex items-center gap-4">
-            <img src="https://rmpinteriorwork-bot.github.io/rmp-EST/RMP-LOGO.jpg" alt="Logo" class="h-16 w-16 object-contain bg-white rounded p-1" onerror="this.style.display='none'">
+            <img src="https://rmpinteriorwork-bot.github.io/rmp-EST/RMP-LOGO.jpeg" alt="Logo" class="h-16 w-16 object-contain bg-white rounded p-1" onerror="this.style.display='none'">
             <div>
                 <h1 class="text-3xl font-bold text-yellow-500">RMP Smart Estimator</h1>
                 <p class="text-sm text-gray-400">Built with Vision. Designed with Care.</p>
@@ -104,7 +104,7 @@
         <div id="pdfContent" class="bg-white p-10 w-full max-w-4xl shadow-2xl relative" style="color: black; font-family: sans-serif;">
             <div style="border-bottom: 3px solid #f59e0b; padding-bottom: 15px; margin-bottom: 15px; display: flex; justify-content: space-between; align-items: flex-end;">
                 <div style="display: flex; gap: 15px; align-items: center;">
-                    <img src="https://rmpinteriorwork-bot.github.io/rmp-EST/RMP-LOGO.jpg" alt="Logo" style="height: 65px; width: 65px; object-fit: contain;">
+                    <img src="https://rmpinteriorwork-bot.github.io/rmp-EST/RMP-LOGO.jpeg" alt="Logo" style="height: 65px; width: 65px; object-fit: contain;">
                     <div>
                         <h1 style="font-size: 32px; font-weight: 900; color: #000; margin: 0; text-transform: uppercase;">RMP INTERIOR</h1>
                         <p style="font-size: 14px; color: #000; margin: 4px 0; font-weight: bold; letter-spacing: 1px;">Built with Vision. Designed with Care.</p>
@@ -321,7 +321,8 @@
                 label.innerText = 'SHEETS';
                 helper.innerText = qty > 0 ? `1 Sheet = ₹${item.sellPrice * 32} | Total: ${qty * 32} Sq.ft` : `1 Sheet = ₹${item.sellPrice * 32}`;
             } else {
-                label.innerText = item.unit.toUpperCase().replace('(DIRECT)', '').trim();
+                let cleanUnit = item.unit.replace(/\(Direct\)/gi, '').trim();
+                label.innerText = cleanUnit.toUpperCase();
                 helper.innerText = '';
             }
         }
@@ -332,17 +333,22 @@
             if(!itemId || qty <= 0) return alert("Select an item and valid quantity");
             const item = inventory.find(i => i.id === itemId);
             
-            let amount = 0, displayQty = '';
+            let amount = 0, displayQty = '', displayRate = '';
+            
             if(item.unit === 'Sheet (32 Sq.ft)') {
-                amount = qty * 32 * item.sellPrice;
+                let sheetPrice = item.sellPrice * 32;
+                amount = qty * sheetPrice;
                 displayQty = `${qty} Sheets (${qty * 32} Sq.ft)`;
+                displayRate = `₹${sheetPrice}/Sheet`; // Shows perfect single sheet price
             } else {
                 amount = qty * item.sellPrice;
-                displayQty = `${qty} ${item.unit}`;
+                let cleanUnit = item.unit.replace(/\(Direct\)/gi, '').trim();
+                displayQty = `${qty} ${cleanUnit}`;
+                displayRate = `₹${item.sellPrice}/${cleanUnit}`;
             }
 
             const descParts = [item.name, item.brand, item.grade, item.color, item.model].filter(Boolean).join(' · ');
-            estimateList.push({ id: Date.now(), category: item.category, desc: descParts, qty: displayQty, rate: `₹${item.sellPrice}/${item.unit}`, amount: amount });
+            estimateList.push({ id: Date.now(), category: item.category, desc: descParts, qty: displayQty, rate: displayRate, amount: amount });
             
             document.getElementById('itemSelect').value = '';
             document.getElementById('itemQty').value = '';
@@ -364,9 +370,6 @@
             estimateList.forEach(row => {
                 total += row.amount;
                 
-                const pdfQty = row.qty.replace(/\(Direct\)/gi, '').trim();
-                const pdfRate = row.rate.replace(/\(Direct\)/gi, '').trim();
-
                 list.innerHTML += `
                     <div class="bg-gray-800 p-3 rounded flex justify-between items-center text-sm">
                         <div><p class="font-bold text-white">${row.desc}</p><p class="text-gray-400">${row.qty} · ${row.rate}</p></div>
@@ -378,8 +381,8 @@
                     <tr>
                         <td style="padding: 10px; text-align: center; border: 1px solid #000; font-weight: bold;">${row.category || '-'}</td>
                         <td style="padding: 10px; text-align: center; border: 1px solid #000; font-weight: 900;">${row.desc}</td>
-                        <td style="padding: 10px; text-align: center; border: 1px solid #000; font-weight: bold;">${pdfQty}</td>
-                        <td style="padding: 10px; text-align: center; border: 1px solid #000; font-weight: bold;">${pdfRate}</td>
+                        <td style="padding: 10px; text-align: center; border: 1px solid #000; font-weight: bold;">${row.qty}</td>
+                        <td style="padding: 10px; text-align: center; border: 1px solid #000; font-weight: bold;">${row.rate}</td>
                         <td style="padding: 10px; text-align: center; border: 1px solid #000; font-weight: 900;">₹${row.amount}</td>
                     </tr>`;
             });
