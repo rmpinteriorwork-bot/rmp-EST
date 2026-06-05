@@ -78,6 +78,9 @@
                     <button onclick="exportData()" class="bg-gray-700 px-3 py-1 rounded hover:bg-gray-600">Export JSON</button>
                     <button onclick="document.getElementById('importFile').click()" class="bg-gray-700 px-3 py-1 rounded hover:bg-gray-600">Import JSON</button>
                     <input type="file" id="importFile" class="hidden" accept=".json" onchange="importData(event)">
+                    <button onclick="backupToEmail()" class="bg-green-700 px-3 py-1 rounded hover:bg-green-600 text-white font-bold mt-2">
+    📧 Backup to Mail
+</button>
                 </div>
             </div>
         </div>
@@ -463,7 +466,13 @@
             };
             reader.readAsText(file);
         }
-
+// இந்த பகுதியை உங்கள் <script> டேக்கின் உள்ளே சேர்க்கவும்
+function backupToEmail() {
+    const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(inventory));
+    const subject = "RMP Inventory Backup - " + new Date().toLocaleDateString();
+    const body = "வணக்கம், இதோ எனது RMP Interior ஆப்பின் தற்போதைய பேக்கப் ஃபைல்.";
+    window.location.href = `mailto:?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}%0A%0AData: ${encodeURIComponent(JSON.stringify(inventory))}`;
+}
         window.onload = loadDropdown;
     </script>
 </body>
