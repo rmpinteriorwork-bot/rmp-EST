@@ -93,7 +93,6 @@
     </div>
 
     <div id="previewModal" class="fixed inset-0 bg-black bg-opacity-95 hidden z-50 flex-col items-center p-4 overflow-y-auto">
-        
         <div class="w-full max-w-4xl flex justify-between items-center mb-4 sticky top-0 z-50 bg-gray-800 p-4 rounded-lg shadow-xl border border-gray-600">
             <h2 class="text-yellow-500 font-bold text-lg">🔍 Preview Estimate</h2>
             <div class="flex gap-4">
@@ -157,7 +156,7 @@
         </div>
     </div>
 
-    <div id="adminModal" class="fixed inset-0 bg-black bg-opacity-80 hidden flex justify-center items-center z-50 p-4">
+    <div id="adminModal" class="fixed inset-0 bg-black bg-opacity-80 hidden justify-center items-center z-50 p-4">
         <div class="glass-panel w-full max-w-4xl p-6 bg-gray-900 max-h-[90vh] overflow-y-auto">
             <div class="flex justify-between items-center mb-6 border-b border-gray-700 pb-2">
                 <h2 class="text-2xl font-bold text-yellow-500">Admin Panel - Inventory</h2>
@@ -223,13 +222,24 @@
     </div>
 
     <script>
-        let inventory = JSON.parse(localStorage.getItem('rmp_inventory')) || [];
+        // Safety Check 1: Protected JSON Loading
+        let inventory = [];
+        try {
+            let savedData = localStorage.getItem('rmp_inventory');
+            if(savedData) inventory = JSON.parse(savedData);
+        } catch(e) {
+            console.error("Inventory Load Error", e);
+            inventory = [];
+        }
         let estimateList = [];
 
+        // Safety Check 2: Fixed Modal Toggles
         function handleAdminLogin() {
             let pwd = prompt("Enter Admin Password:");
             if(pwd === "rmp123") {
-                document.getElementById('adminModal').classList.remove('hidden');
+                let modal = document.getElementById('adminModal');
+                modal.classList.remove('hidden');
+                modal.classList.add('flex');
                 renderAdminTable();
             } else if(pwd !== null) {
                 alert("Incorrect Password!");
@@ -237,7 +247,9 @@
         }
 
         function closeAdmin() {
-            document.getElementById('adminModal').classList.add('hidden');
+            let modal = document.getElementById('adminModal');
+            modal.classList.remove('flex');
+            modal.classList.add('hidden');
             loadDropdown();
         }
 
@@ -377,7 +389,74 @@
             document.getElementById('pdfGrandTotal').innerText = `₹${total}`;
         }
 
-        // --- NEW PREVIEW FUNCTIONS ---
-
         function openPreview() {
             if(estimateList.length === 0) return alert("Add items to preview estimate");
+            
+            document.getElementById('pdfCustName').innerText = document.getElementById('custName').value || '-';
+            document.getElementById('pdfCustMobile').innerText = document.getElementById('custMobile').value || '-';
+            document.getElementById('pdfCustLocation').innerText = document.getElementById('custLocation').value || '-';
+            
+            const today = new Date();
+            document.getElementById('pdfDate').innerText = today.toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric' });
+            
+            if(!document.getElementById('pdfEstNum').innerText) {
+                document.getElementById('pdfEstNum').innerText = "EST-" + Math.floor(100000 + Math.random() * 900000);
+            }
+
+            let modal = document.getElementById('previewModal');
+            modal.classList.remove('hidden');
+            modal.classList.add('flex');
+        }
+
+        function closePreview() {
+            let modal = document.getElementById('previewModal');
+            modal.classList.remove('flex');
+            modal.classList.add('hidden');
+        }
+
+        function downloadPDF() {
+            const btn = document.getElementById('realDownloadBtn');
+            btn.innerText = "⏳ Downloading...";
+            btn.disabled = true;
+
+            const element = document.getElementById('pdfContent');
+            
+            html2pdf().set({
+                margin: 10,
+                filename: 'RMP-Estimate-' + (document.getElementById('custName').value || 'New') + '.pdf',
+                image: { type: 'jpeg', quality: 1 },
+                html2canvas: { scale: 3, useCORS: true },
+                jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
+            }).from(element).save().then(() => {
+                btn.innerText = "📥 Download PDF";
+                btn.disabled = false;
+            });
+        }
+
+        function exportData() {
+            const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(inventory));
+            const dlAnchorElem = document.createElement('a');
+            dlAnchorElem.setAttribute("href", dataStr);
+            dlAnchorElem.setAttribute("download", "rmp_inventory_backup.json");
+            dlAnchorElem.click();
+        }
+
+        function importData(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                try {
+                    inventory = JSON.parse(e.target.result);
+                    localStorage.setItem('rmp_inventory', JSON.stringify(inventory));
+                    loadDropdown();
+                    alert("Backup Imported Successfully!");
+                } catch(err) { alert("Error loading backup file"); }
+            };
+            reader.readAsText(file);
+        }
+
+        window.onload = loadDropdown;
+    </script>
+</body>
+</html>
